@@ -33,6 +33,7 @@ PROMPT_GEOMETRY_GIT_TIME=${PROMPT_GEOMETRY_GIT_TIME:-true}
 PROMPT_GEOMETRY_GIT_TIME_LONG_FORMAT=${PROMPT_GEOMETRY_GIT_TIME_LONG_FORMAT:-false}
 PROMPT_GEOMETRY_GIT_TIME_SHOW_EMPTY=${PROMPT_GEOMETRY_GIT_TIME_SHOW_EMPTY:-true}
 PROMPT_GEOMETRY_GIT_SHOW_STASHES=${PROMPT_GEOMETRY_GIT_SHOW_STASHES:-true}
+PROMPT_GEOMETRY_GIT_STATUS_UNTRACKED_FILES=${PROMPT_GEOMETRY_GIT_STATUS_UNTRACKED_FILES:-true}
 
 # Misc configurations
 GEOMETRY_GIT_NO_COMMITS_MESSAGE=${GEOMETRY_GIT_NO_COMMITS_MESSAGE:-"no commits"}
@@ -62,8 +63,12 @@ prompt_geometry_git_branch() {
 }
 
 prompt_geometry_git_status() {
+  local GIT_LS_FILES_ARGS="--modified --exclude-standard"
+  if $PROMPT_GEOMETRY_GIT_STATUS_UNTRACKED_FILES; then
+    GIT_LS_FILES_ARGS="${GIT_LS_FILES_ARGS} --others"
+  fi
   if test -z "$(git status --porcelain --ignore-submodules HEAD)"; then
-    if test -z "$(git ls-files --others --modified --exclude-standard)"; then
+    if test -z "$(git ls-files ${GIT_LS_FILES_ARGS})"; then
       echo $GEOMETRY_GIT_CLEAN
     else
       echo $GEOMETRY_GIT_DIRTY
